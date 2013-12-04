@@ -78,7 +78,8 @@ class Miner
                 databyte[79] = (byte)(nonce >> 24);
                 scrypted = SCrypt.DeriveKey(databyte, databyte, 1024, 1, 1, 32);
                 
-                hr++;
+                //this is a thread locked increment
+                Interlocked.Increment(ref hr);
                 if (meetsTarget(scrypted, target))
                 {
                     if(!done)fnonce = nonce; done = true; break;
@@ -201,7 +202,7 @@ class Miner
             ar[a++] = BASE64_ALPHABET[((b1 << 2) | ((b2 & 0xFF) >> 6)) & 0x3f];
             ar[a++] = BASE64_ALPHABET[b2 & 0x3f];
         }
-        int o=0;
+        
         switch (size % 3)
         {
             case 1: ar[--a] = '='; break;
